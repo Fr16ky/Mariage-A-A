@@ -9,16 +9,25 @@ const tableBox = document.getElementById("table");
 
 // CHARGEMENT CSV (FIABLE SUR GITHUB PAGES)
 fetch("invites.csv")
-  .then(res => res.text())
+  .then(res => {
+    if (!res.ok) throw new Error("CSV introuvable");
+    return res.text();
+  })
   .then(text => {
 
-    const lines = text.trim().split("\n").slice(1);
+    console.log("CSV brut :", text); // DEBUG IMPORTANT
 
-    invites = lines.map(line => {
+    const lines = text.trim().split("\n");
+
+    invites = lines.slice(1).map(line => {
       const [prenom, nom, table] = line.split(",");
       return { prenom, nom, table };
     });
 
+    console.log("Invités chargés :", invites);
+  })
+  .catch(err => {
+    console.error("Erreur chargement CSV :", err);
   });
 
 search.addEventListener("input", () => {
