@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Notre Mariage</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- SheetJS (lecture Excel) -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<div class="card">
+
+  <h1>Amandine & Thomas</h1>
+  <p class="subtitle">Trouvez votre table ✨</p>
+
+  <input id="search" placeholder="Nom ou prénom..." autocomplete="off"/>
+
+  <div id="suggestions" class="suggestions"></div>
+
+  <div id="result" class="result hidden">
+    <div class="name" id="name"></div>
+    <div class="table" id="table"></div>
+    <div class="msg">Très belle soirée ❤️</div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
