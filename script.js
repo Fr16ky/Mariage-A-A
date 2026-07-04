@@ -7,27 +7,39 @@ const resultBox = document.getElementById("result");
 const nameBox = document.getElementById("name");
 const tableBox = document.getElementById("table");
 
-// CHARGEMENT CSV (FIABLE SUR GITHUB PAGES)
-fetch("invites.csv")
+// CHARGEMENT EXCEL (via SheetJS) - fonctionne sur GitHub Pages
+fetch("invites.xlsx")
   .then(res => {
-    if (!res.ok) throw new Error("CSV introuvable");
-    return res.text();
+    if (!res.ok) throw new Error("Fichier invites.xlsx introuvable (vérifie le nom exact, sensible à la casse)");
+    return res.arrayBuffer();
   })
-  .then(text => {
+  .then(buffer => {
+    const workbook = XLSX.read(buffer, { type: "array" });
+    const firstSheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[firstSheetName];
 
-    console.log("CSV brut :", text); // DEBUG IMPORTANT
+    // Convertit la feuille en tableau d'objets JSON
+    // Les entêtes de colonnes dans Excel doivent être : Prenom, Nom, Table
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
-    const lines = text.trim().split("\n");
+    invites = rows.map(row => {
+      // On cherche les clés en ignorant la casse et les accents éventuels
+      const keys = Object.keys(row);
+      const prenomKey = keys.find(k => k.toLowerCase().includes("prenom") || k.toLowerCase().includes("prénom"));
+      const nomKey = keys.find(k => k.toLowerCase() === "nom");
+      const tableKey = keys.find(k => k.toLowerCase().includes("table"));
 
-    invites = lines.slice(1).map(line => {
-      const [prenom, nom, table] = line.split(",");
-      return { prenom, nom, table };
+      return {
+        prenom: String(row[prenomKey] ?? "").trim(),
+        nom: String(row[nomKey] ?? "").trim(),
+        table: String(row[tableKey] ?? "").trim()
+      };
     });
 
     console.log("Invités chargés :", invites);
   })
   .catch(err => {
-    console.error("Erreur chargement CSV :", err);
+    console.error("Erreur chargement Excel :", err);
   });
 
 search.addEventListener("input", () => {
