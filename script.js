@@ -7,13 +7,18 @@ const resultBox = document.getElementById("result");
 const nameBox = document.getElementById("name");
 const tableBox = document.getElementById("table");
 
-// Charger Excel
-fetch("invites.xlsx")
-  .then(r => r.arrayBuffer())
-  .then(data => {
-    const workbook = XLSX.read(data, { type: "array" });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    invites = XLSX.utils.sheet_to_json(sheet);
+// CHARGEMENT CSV (FIABLE SUR GITHUB PAGES)
+fetch("invites.csv")
+  .then(res => res.text())
+  .then(text => {
+
+    const lines = text.trim().split("\n").slice(1);
+
+    invites = lines.map(line => {
+      const [prenom, nom, table] = line.split(",");
+      return { prenom, nom, table };
+    });
+
   });
 
 search.addEventListener("input", () => {
@@ -52,9 +57,8 @@ function showResult(p){
   launchConfetti();
 }
 
-// mini confettis simple
 function launchConfetti(){
-  for(let i=0;i<25;i++){
+  for(let i=0;i<20;i++){
     const c = document.createElement("div");
     c.style.position="fixed";
     c.style.width="6px";
@@ -64,9 +68,13 @@ function launchConfetti(){
     c.style.top="-10px";
     document.body.appendChild(c);
 
+    let y = -10;
+
     let fall = setInterval(()=>{
-      c.style.top = (parseFloat(c.style.top)+5)+"px";
-      if(parseFloat(c.style.top)>window.innerHeight){
+      y += 5;
+      c.style.top = y + "px";
+
+      if(y > window.innerHeight){
         clearInterval(fall);
         c.remove();
       }
